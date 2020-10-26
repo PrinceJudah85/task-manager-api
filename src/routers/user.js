@@ -93,5 +93,3 @@ router.delete('/users/me', auth, async (req, res) => {
 })
 
 module.exports = router
-
-// const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true }) // .findByIdAndUpdate bypasses mongoose and updates the database not allowing for middleware functions to apply. Middleware functions are needed in order to hash incoming password submissions / changes. 

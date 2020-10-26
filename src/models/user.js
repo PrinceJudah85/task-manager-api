@@ -120,30 +120,3 @@ userSchema.pre('remove', async function (next) {
 const User = mongoose.model('User', userSchema)
 
 module.exports = User
-
-// Creating instances of the User model
-
-// const me = new User({ // User model instance 
-//   name: '   Rafa',
-//   email: 'MYEMAIL@GMAIL.COM',
-//   password: 'Password123'
-// })
-
-// me.save().then(() => { // Saving me variable to database which is an asynchronous function that returns a promise
-//   console.log(me)
-// }).catch((error) => {
-//   console.log('Error!', error)
-// })
-
-// Hashing Passwords 
-
-// const myFunction = async () => {
-//   const password = 'Red12345!'
-//   const hashedPassword = await bcrypt.hash(password, 8) //1st argument = string text password, 2nd argument = number of rounds / times the hashing algorithm is executed. 8 is a popular number of rounds.
-  
-//   console.log(password)
-//   console.log(hashedPassword)
-
-//   const isMatch = await bcrypt.compare('red12345!', hashedPassword)
-//   console.log(isMatch)
-// }

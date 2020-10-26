@@ -19,16 +19,33 @@ router.post('/tasks', auth, async (req, res) => {
   }
 })
 
-// GET /tasks?completed=true
+// GET /tasks?completed=true    => this Query search will only render documents who's completed fields = true
+// GET /tasks?limit=10&skip=10  => this Query search will only render the second 10 results since 'skip' is skipping thru the first 10 results AKA Pagination
+// GET /tasks?sortBy=createdAt:asc
 router.get('/tasks', auth, async (req, res) => {
+  const match = {} // handles specific query searches of tasks data
+  const sort = {}
+
+  if (req.query.completed) {
+    match.completed = req.query.completed === 'true'
+  }
+
+  if (req.query.sortBy) {
+    const parts = req.query.sortBy.split(':')
+    sort[parts[0]] = parts[1] === 'desc' ? -1 : 1
+  }
+    
   try {
     //const tasks = await Task.find({ owner: req.user._id }) //(Alternate solution)
     await req.user.populate({
       path: 'myTasks',
-      match: {
-        completed: true
+      match,
+      options: {
+        limit: parseInt(req.query.limit), // will allow the client to decide how many reuslts get rendered on the page
+        skip: parseInt(req.query.skip), // will allow the client to decide how many results get skipped in the rendering process
+        sort
       }
-    }).execPopulate()
+      }).execPopulate()
     res.send(req.user.myTasks)
   } catch (e) {
     res.status(500).send()

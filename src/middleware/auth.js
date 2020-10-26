@@ -20,32 +20,3 @@ const auth = async (req, res, next) => { // this async middleware function will 
 }
 
 module.exports = auth
-
-// Middleware Example
-
-// app.use((req, res, next) => { // The 'next' argument is specific to middleware
-//   // console.log(req.method, req.path)
-//   if (req.method === 'GET') {
-//     res.send('GET requests are disabled')
-//   } else {
-//     next()
-//   }
-// })
-
-// app.use((req, res, next) => {
-//     res.status(503).send('The site is currently under maintenance. Please check back soon.')
-// })
-
-//JSON web token function example
-
-// const jwt = require('jsonwebtoken')
-
-// const myFunction = async () => {
-//   const token = jwt.sign({ email: 'abc123@express.com' }, 'thisismynewcourse', { expiresIn: '2 weeks'}) // The 1st argument in the sign() method is an object that must include a unique identifier for the user who's being authenticated, which will be embedded in the returning token. So in this case the id works. The 2nd argument is a random series of characters known as a signature. The 3rd, optional argument, is an object that gives you access to some options. One of which allows you to set the amount of time before the token expires. 
-//   console.log(token)
-
-//   const data = jwt.verify(token, 'thisismynewcourse') // verify() method takes 2 arguments: 1st argument is the json web token returned from the sign() method and the 2nd argument is the signature that was used to generate the token in the sign() method. Verify() method will return the payload for the token if it's valid or return an error if it doesn't. 
-//   console.log(data)
-// }
-
-// myFunction()

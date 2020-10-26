@@ -22,13 +22,3 @@ const taskSchema = new mongoose.Schema({
 const Task = mongoose.model('Task', taskSchema)
 
 module.exports = Task
-
-// const cleaning = new Task({
-//   description: '       eat Lunch'
-// })
-
-// cleaning.save().then((cleaning) => {
-//   console.log(cleaning)
-// }).catch((error) => {
-//   console.log('Error!', error)
-// })
