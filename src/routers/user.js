@@ -2,6 +2,8 @@ const express = require('express')
 const User = require('../models/user')
 const auth = require('../middleware/auth')
 const router = new express.Router() // Create new router
+const multer = require('multer') // importing multer for file uploads
+
 
 
 // Setup Routes 
@@ -90,6 +92,48 @@ router.delete('/users/me', auth, async (req, res) => {
   } catch (e) {
     res.status(500).send()
   }
+})
+
+const upload = multer({
+  limits: {
+    fileSize: 1000000
+  },
+  fileFilter(req, file, cb) {
+    if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+      cb(new Error('Please upload an image file'))
+    }
+
+    cb(undefined, true)
+  }
+})
+
+router.post('/users/me/avatar', auth, upload.single('avatar'), async (req, res) => { // Route handler for receiving client file uploads does not get access to the uploaded file data if 'Dest' property exists in the Multer options object found in 'upload' variable. 
+  req.user.avatar = req.file.buffer
+  await req.user.save()
+  res.send()
+}, (error, req, res, next) => {
+    res.status(400).send({ error: error.message })
+})
+
+router.get('/users/:id/avatar', async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id)
+
+    if (!user || !user.avatar) {
+      throw new Error()
+    }
+
+    res.set('Content-Type', 'image/jpg')
+    res.send(user.avatar)
+  } catch (e) {
+    res.status(400).send()
+  }
+})
+
+router.delete('/users/me/avatar', auth, async (req, res) => {
+  req.user.avatar = undefined
+  await req.user.save()
+  res.send()
 })
 
 module.exports = router

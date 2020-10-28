@@ -42,6 +42,9 @@ const userSchema = new mongoose.Schema({
       }
     }
   },
+  avatar: { // Multer handles validation of file uploads so no need to include it on the User Model
+    type: Buffer
+  },
   tokens: [{
     token: {
       type: String,
