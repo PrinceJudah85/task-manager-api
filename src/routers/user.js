@@ -1,14 +1,14 @@
 const express = require('express')
-const User = require('../models/user')
-const auth = require('../middleware/auth')
-const router = new express.Router() // Create new router
 const multer = require('multer') // importing multer for file uploads
-
+const sharp = require('sharp') // importing sharp for image resizing/formating
+const User = require('../models/user')
+const auth = require('../middleware/auth')// importing auth middleware
+const router = new express.Router() // Create new router
 
 
 // Setup Routes 
   
-// Creating new user route
+// Create new user route
 router.post('/users', async (req, res) => { // each request has the same call signature => app.httpREQType('/path', (request, response) => {})
   const user = new User(req.body)
 
@@ -85,6 +85,8 @@ router.patch('/users/me', auth, async (req, res) => {
   }
 })
 
+// delete user profile
+
 router.delete('/users/me', auth, async (req, res) => {
   try {
     await req.user.remove()
@@ -94,27 +96,32 @@ router.delete('/users/me', auth, async (req, res) => {
   }
 })
 
+// Setting up file upload (multer) middleware function
 const upload = multer({
   limits: {
     fileSize: 1000000
   },
   fileFilter(req, file, cb) {
     if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
-      cb(new Error('Please upload an image file'))
+      return cb(new Error('Please upload an image'))
     }
 
     cb(undefined, true)
   }
 })
 
+// Create user avatar route 
 router.post('/users/me/avatar', auth, upload.single('avatar'), async (req, res) => { // Route handler for receiving client file uploads does not get access to the uploaded file data if 'Dest' property exists in the Multer options object found in 'upload' variable. 
-  req.user.avatar = req.file.buffer
+  // req.user.avatar = req.file.buffer
+  const buffer = await sharp(req.file.buffer).resize({width: 250, height: 250}).png().toBuffer()
+  req.user.avatar = buffer
   await req.user.save()
   res.send()
 }, (error, req, res, next) => {
     res.status(400).send({ error: error.message })
 })
 
+// Get user avatar route 
 router.get('/users/:id/avatar', async (req, res) => {
   try {
     const user = await User.findById(req.params.id)
@@ -123,13 +130,14 @@ router.get('/users/:id/avatar', async (req, res) => {
       throw new Error()
     }
 
-    res.set('Content-Type', 'image/jpg')
+    res.set('Content-Type', 'image/png')
     res.send(user.avatar)
   } catch (e) {
     res.status(400).send()
   }
 })
 
+// Delete user avatar route
 router.delete('/users/me/avatar', auth, async (req, res) => {
   req.user.avatar = undefined
   await req.user.save()

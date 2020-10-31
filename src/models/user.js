@@ -79,7 +79,7 @@ userSchema.methods.toJSON = function () {
 
   delete userObject.password
   delete userObject.tokens
-
+  delete userObject.avatar // image file (buffer data) too large to include on each profile fetch request. 
 
   return userObject
 }
